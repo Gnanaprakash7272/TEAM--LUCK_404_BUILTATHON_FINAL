@@ -1,0 +1,88 @@
+import { FeatureImportanceItem } from '../types/model';
+
+export const TOP_FEATURE_IMPORTANCES: FeatureImportanceItem[] = [
+  {
+    feature: 'Fwd_Bwd_Length_Ratio',
+    importance: 0.1245,
+    rank: 1,
+    description: 'Ratio of forward packet byte volume to backward volume; critical in exfiltration/Heartbleed.',
+    category: 'advanced',
+  },
+  {
+    feature: 'Destination Port',
+    importance: 0.1182,
+    rank: 2,
+    description: 'Target service port identifying protocol scope (HTTP, SSL, SSH, DNS).',
+    category: 'core',
+  },
+  {
+    feature: 'Flow Duration',
+    importance: 0.0984,
+    rank: 3,
+    description: 'Total lifespan of the network conversation in microseconds.',
+    category: 'core',
+  },
+  {
+    feature: 'Total Length of Bwd Packets',
+    importance: 0.0891,
+    rank: 4,
+    description: 'Aggregate bytes emitted from server to client; key indicator for memory disclosure.',
+    category: 'core',
+  },
+  {
+    feature: 'Flow Packets/s_log',
+    importance: 0.0765,
+    rank: 5,
+    description: 'Log-normalized packet transmission velocity identifying high-rate DoS flooding.',
+    category: 'advanced',
+  },
+  {
+    feature: 'Init_Win_bytes_backward',
+    importance: 0.0698,
+    rank: 6,
+    description: 'Initial TCP receive window size advertised backward by responder.',
+    category: 'core',
+  },
+  {
+    feature: 'Window_Size_Ratio',
+    importance: 0.0632,
+    rank: 7,
+    description: 'Ratio between forward and backward TCP buffer allocation.',
+    category: 'advanced',
+  },
+  {
+    feature: 'Fwd Packets/s',
+    importance: 0.0541,
+    rank: 8,
+    description: 'Forward packet arrival frequency.',
+    category: 'core',
+  },
+  {
+    feature: 'Flow IAT Min',
+    importance: 0.0487,
+    rank: 9,
+    description: 'Minimum inter-arrival interval observed between consecutive packets.',
+    category: 'core',
+  },
+  {
+    feature: 'Packet_Length_CV',
+    importance: 0.0423,
+    rank: 10,
+    description: 'Coefficient of variation of packet size showing uniformity vs burstiness.',
+    category: 'advanced',
+  },
+  {
+    feature: 'Fwd Header Length',
+    importance: 0.0389,
+    rank: 11,
+    description: 'Cumulative byte length of all forward IP/TCP protocol headers.',
+    category: 'core',
+  },
+  {
+    feature: 'PSH Flag Count',
+    importance: 0.0312,
+    rank: 12,
+    description: 'Frequency of TCP PUSH flags indicating application layer data delivery.',
+    category: 'core',
+  },
+];

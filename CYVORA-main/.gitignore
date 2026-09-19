@@ -6,8 +6,9 @@ __pycache__/
 !.env.example
 node_modules/
 dist/
-data/
-models/
+/data/
+!frontend/src/data/
+/models/
 *.pkl
 *.joblib
 .vscode/

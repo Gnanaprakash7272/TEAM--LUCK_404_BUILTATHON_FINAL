@@ -1,1 +1,0 @@
-# CYVORA source package
