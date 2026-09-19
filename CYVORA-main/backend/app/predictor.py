@@ -9,18 +9,27 @@ import numpy as np
 # CYVORA V21.1 PREDICTOR
 # ============================================================
 
+ENV_MODEL_PATH = os.environ.get("CYVORA_MODEL_PATH")
 LOCAL_MODEL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     "models",
     "rare_attack_optimization_v21_1",
     "cyvora_rare_attack_model_v21_1.pkl"
 )
-DEFAULT_MODEL_PATH = (
-    r"C:\CYVORA\models\rare_attack_optimization_v21_1"
-    r"\cyvora_rare_attack_model_v21_1.pkl"
+FALLBACK_REL_PATH = os.path.join(
+    "models",
+    "rare_attack_optimization_v21_1",
+    "cyvora_rare_attack_model_v21_1.pkl"
 )
 
-MODEL_PATH = LOCAL_MODEL_PATH if os.path.exists(LOCAL_MODEL_PATH) else DEFAULT_MODEL_PATH
+if ENV_MODEL_PATH and os.path.exists(ENV_MODEL_PATH):
+    MODEL_PATH = ENV_MODEL_PATH
+elif os.path.exists(LOCAL_MODEL_PATH):
+    MODEL_PATH = LOCAL_MODEL_PATH
+elif os.path.exists(FALLBACK_REL_PATH):
+    MODEL_PATH = FALLBACK_REL_PATH
+else:
+    MODEL_PATH = LOCAL_MODEL_PATH
 
 # ============================================================
 # LOAD V21.1 MODEL BUNDLE
@@ -28,7 +37,9 @@ MODEL_PATH = LOCAL_MODEL_PATH if os.path.exists(LOCAL_MODEL_PATH) else DEFAULT_M
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(
-        f"V21.1 model not found at {MODEL_PATH} or {DEFAULT_MODEL_PATH}"
+        f"V21.1 model bundle not found at: {MODEL_PATH}. "
+        "Ensure models/rare_attack_optimization_v21_1/cyvora_rare_attack_model_v21_1.pkl exists "
+        "or set the CYVORA_MODEL_PATH environment variable."
     )
 
 bundle = joblib.load(MODEL_PATH)

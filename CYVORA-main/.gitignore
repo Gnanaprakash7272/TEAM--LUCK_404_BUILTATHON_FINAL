@@ -17,4 +17,6 @@ models/
 MachineLearningCVE/
 
 backend/app/main.py.backup
+backend/app/*backup*.py
+*backup*.py
 frontend/tsconfig.tsbuildinfo

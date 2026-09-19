@@ -35,11 +35,11 @@ DEFAULT_MODEL_PATH = os.path.join(
     "models",
     "anomaly_model.pkl",
 )
-ALT_MODEL_PATH = r"C:\CYVORA\models\anomaly_model.pkl"
+FALLBACK_MODEL_PATH = os.path.join("models", "anomaly_model.pkl")
 
 MODEL_PATH = (
     os.environ.get("ANOMALY_MODEL_PATH")
-    or (DEFAULT_MODEL_PATH if os.path.exists(DEFAULT_MODEL_PATH) else ALT_MODEL_PATH)
+    or (DEFAULT_MODEL_PATH if os.path.exists(DEFAULT_MODEL_PATH) else FALLBACK_MODEL_PATH)
 )
 
 _model_bundle: Optional[Dict[str, Any]] = None

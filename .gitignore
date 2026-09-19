@@ -1,8 +1,36 @@
-node_modules/
+# Root .gitignore for CYVORA / BUILDATHON_FINAL
+.venv/
+venv/
 __pycache__/
 *.pyc
-.env
+*.pyo
+*.pyd
 
-*.db
-*.sqlite
-*.sqlite3
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Models & Data (large binaries)
+models/
+data/
+*.pkl
+*.joblib
+MachineLearningCVE/
+
+# IDE & OS files
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Backup files
+*backup*.py
+*.backup
