@@ -3,6 +3,8 @@
 
 *BUILDATHON 2026 Entry*
 
+> **Scope Note**: Defensive actions (`BLOCK`/`RATE_LIMIT`) are enforced safely at the application/API level, not via real network infrastructure. System-activity and authentication-log monitoring are architecturally supported but out of scope for this MVP; network events and security alerts are fully implemented.
+
 ---
 
 ## Engineering Philosophy
@@ -350,6 +352,7 @@ To demonstrate the full lifecycle of CYVORA during an evaluation or review:
 
 ## Limitations
 
+- **Defensive Actions & Infrastructure**: Defensive actions (`BLOCK`/`RATE_LIMIT`) are enforced safely at the application/API level, not via real network infrastructure. System-activity and authentication-log monitoring are architecturally supported but out of scope for this MVP; network events and security alerts are fully implemented.
 - **Prototype Enforcement Scope**: In the current implementation, blocking and rate limiting are enforced at the application/API layer. Sources sending traffic outside the API ingest port are not intercepted at the OS kernel or border router level.
 - **Dataset Grounding**: Models are calibrated on standard network flow characteristics (flow durations, packet distributions, header lengths). Environments with proprietary encrypted protocols require domain-specific feature extraction.
 - **Single-Node Persistence**: PostgreSQL transactions run against a centralized database instance; high-availability multi-region clustering is not included in the baseline prototype.
