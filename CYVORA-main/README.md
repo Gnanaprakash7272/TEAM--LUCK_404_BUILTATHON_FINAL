@@ -1,8 +1,19 @@
 # CYVORA — Cyber Vulnerability & Operational Response Architecture
-**Autonomous Threat Detection, Anomaly Triage, Contextual Risk Scoring & Deterministic Prevention**
+### Autonomous Threat Detection, Anomaly Triage, Contextual Risk Scoring & Deterministic Prevention
 
-*BUILDATHON 2026 Entry*
+<div align="left">
 
+[![Buildathon](https://img.shields.io/badge/BUILDATHON-2026-blue?style=for-the-badge&logo=shield)](https://github.com/Gnanaprakash7272/TEAM--LUCK_404_BUILTATHON_FINAL)
+[![Architecture](https://img.shields.io/badge/Architecture-Deterministic_Non--Generative-0ea5e9?style=for-the-badge)](https://github.com/Gnanaprakash7272/TEAM--LUCK_404_BUILTATHON_FINAL)
+[![Verification](https://img.shields.io/badge/Test_Suites-81%2F81_PASSED-emerald?style=for-the-badge&logo=checkmarx)](https://github.com/Gnanaprakash7272/TEAM--LUCK_404_BUILTATHON_FINAL)
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![PostgreSQL](https://img.shields.io/badge/Persistence-PostgreSQL_14+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Frontend](https://img.shields.io/badge/Frontend-React_18_%2B_Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+
+</div>
+
+> [!IMPORTANT]
 > **Scope Note**: Defensive actions (`BLOCK`/`RATE_LIMIT`) are enforced safely at the application/API level, not via real network infrastructure. System-activity and authentication-log monitoring are architecturally supported but out of scope for this MVP; network events and security alerts are fully implemented.
 
 ---
@@ -15,7 +26,7 @@ In modern Security Operations Centers (SOCs), operational failure rarely stems f
 
 CYVORA intentionally avoids hype-driven architectural anti-patterns and focuses strictly on engineering fundamentals:
 - **Determinism**: Every policy decision (`ALLOW`, `ALERT`, `RATE_LIMIT`, `BLOCK`) follows reproducible, mathematical rules and explicit confidence boundaries rather than generative sampling.
-- **Low Operational Overhead**: Fast tabular inference on CPU without heavy GPU clustering or slow inference runtimes.
+- **Low Operational Overhead**: Fast tabular inference on standard CPU without heavy GPU clustering or high-latency inference runtimes.
 - **Explainability**: Clear feature threshold contributions and risk-scoring factors rather than computationally prohibitive black-box explainers during streaming flow ingestion.
 - **Persistence**: Every event, prediction, response decision, and audit record is atomically committed to PostgreSQL within a single relational transaction.
 - **Verification**: Defensive actions are actively verified post-execution, recording cryptographic and state evidence before logging.
@@ -124,6 +135,21 @@ CYVORA is a modular, high-efficiency cybersecurity detection and response engine
 
 ---
 
+## Supported Threat Taxonomy & Response Policy Matrix
+
+| Attack Category | Specific Attack Profiles | Primary Indicators | Graduated Response Action | Application Enforcement |
+|---|---|---|:---:|---|
+| **Benign** | Standard HTTP, HTTPS, DNS | Low flow rate, balanced packet distribution | `ALLOW` | Standard traffic pass-through |
+| **Denial of Service** | DoS Hulk, DoS GoldenEye | Flow duration > 1s, packet size asymmetry | `BLOCK` | Source blacklisted (300s TTL) |
+| **Distributed DoS** | DDoS LOIC / UDP flood | High flow packets/sec (>1000 pkt/s) | `BLOCK` | Source blacklisted (300s TTL) |
+| **Reconnaissance** | PortScan | SYN flag = 1, Ack = 0, dest port variation | `RATE_LIMIT` / `BLOCK` | Rate throttled (120s TTL) |
+| **Brute Force** | FTP-Patator, SSH-Patator | Repetitive short connections on port 21/22 | `BLOCK` | Source blacklisted (300s TTL) |
+| **Web Exploits** | SQL Injection, XSS | Port 80, specific flag combinations, payload bytes | `ALERT` / `BLOCK` | Monitored or blocked by severity |
+| **Infiltration** | Internal lateral movement | Window size = 0, unusual header lengths | `BLOCK` | Immediate isolation |
+| **Novel Anomaly** | Unseen anomalous outliers | Statistical distance in Isolation Forest ($\ge 0.60$) | `ALERT` | Escalated to analyst queue |
+
+---
+
 ## Contextual Risk & False-Positive Reduction
 
 Isolated packet metrics are insufficient to determine malicious intent. CYVORA's context risk engine evaluates:
@@ -153,11 +179,72 @@ CYVORA enforces a **deterministic, non-generative response policy**:
 
 ## Response Verification
 
-CYVORA does not assume enforcement succeeded simply because an action function was called.
+CYVORA does not assume enforcement succeeded simply because an action function was called:
 - The **Response Verifier** queries the active prevention tables post-execution.
 - Confirms whether the source ID is actively registered in the expected state with valid remaining TTL.
 - Generates a structured verification evidence payload (`VERIFIED`, `FAILED`, or `NOT_APPLICABLE`).
 - Persists the verification evidence into the `response_actions` record and appends a `RESPONSE_VERIFIED` audit log entry.
+
+---
+
+## Real Telemetry Payload Schema
+
+Every invocation of `POST /predict` returns a fully structured, multi-engine telemetry response:
+
+```json
+{
+  "success": true,
+  "result": {
+    "prediction": "Heartbleed",
+    "prediction_id": 1,
+    "confidence": 0.9942,
+    "is_attack": true,
+    "severity": "CRITICAL",
+    "model_version": "V21.1",
+    "decision_source": "specialist_ensemble"
+  },
+  "anomaly": {
+    "status": "active",
+    "model": "isolation_forest",
+    "anomaly_score": 0.8028,
+    "is_anomalous": true
+  },
+  "novelty": {
+    "novelty_label": "KNOWN_THREAT",
+    "reason": "Known threat recognized by supervised classifier with high confidence"
+  },
+  "risk": {
+    "risk_score": 0.8385,
+    "risk_level": "HIGH",
+    "reasons": [
+      "Known threat detected with high confidence (+0.40)",
+      "High anomaly score observed (+0.28)",
+      "Repeat offender source history (+0.16)"
+    ]
+  },
+  "response": {
+    "response_action": "BLOCK",
+    "response_status": "ATTACK_BLOCKED",
+    "severity": "CRITICAL",
+    "reason": "High-confidence critical attack classified as Heartbleed."
+  },
+  "prevention": {
+    "enforced": true,
+    "action": "BLOCK",
+    "status": "ATTACK_BLOCKED",
+    "source_id": "192.168.10.50",
+    "ttl_seconds": 300
+  },
+  "verification": {
+    "verified": true,
+    "verification_status": "VERIFIED",
+    "action": "BLOCK",
+    "evidence": "Source '192.168.10.50' verified in active application-level blocked state (300s TTL remaining)."
+  },
+  "db_persisted": true,
+  "security_event_id": 142
+}
+```
 
 ---
 
